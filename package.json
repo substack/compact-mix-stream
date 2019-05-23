@@ -1,0 +1,24 @@
+{
+  "name": "compact-mix-stream",
+  "version": "1.0.0",
+  "description": "pack/unpack multiple streams to/from an output stream",
+  "keywords": [
+    "spawn",
+    "process",
+    "stream",
+    "stderr",
+    "stdout"
+  ],
+  "dependencies": {
+    "end-of-stream": "^1.4.1",
+    "readable-stream": "^3.3.0",
+    "varint": "^5.0.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "devDependencies": {
+    "collect-stream": "^1.2.1",
+    "tape": "^4.10.1"
+  }
+}
