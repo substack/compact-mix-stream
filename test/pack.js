@@ -4,7 +4,7 @@ var to = require('to2')
 var { Readable } = require('readable-stream')
 var collect = require('collect-stream')
 
-test('pack/unpack (3)', function (t) {
+test('pack/unpack [3]', function (t) {
   t.plan(2)
   var a = new Readable({ read: noop })
   var b = new Readable({ read: noop })

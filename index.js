@@ -65,38 +65,47 @@ exports.unpack = function (n) {
   var pending = { data: null, length: 0, channel: -1 }
   return new Transform({
     readableObjectMode: true,
-    transform: function (buf, enc, next) {
+    transform: function transform (buf, enc, next) {
       if (pending.data !== null) {
         buf = Buffer.concat([pending.data,buf])
         pending.data = null
       }
       if (pending.length > 0 && buf.length === pending.length) {
         pending.length = 0
-        return next({ channel: pending.channel, data: buf })
-      } else if (pending.length > 0 && buf.length < pending.length) {
+        return next(null, { channel: pending.channel, data: buf })
+      } else if (pending.length > 0 && buf.length > pending.length) {
         var doc = {
           channel: pending.channel,
           data: buf.slice(0,pending.length)
         }
+        var nbuf = buf.slice(pending.length)
         pending.length = 0
-        buf = buf.slice(pending.length)
         this.push(doc)
+        return transform.call(this, nbuf, enc, next)
       } else if (pending.length > 0) {
+        pending.data = buf
+        // wait for more data
         return next()
       }
       try { var x = varint.decode(buf) }
       catch (err) {
-        pending.data.push(buf)
+        pending.data = buf
         return next()
       }
       var xlen = varint.decode.bytes
       var len = x >> rsh
       var channel = x & ((1<<rsh)-1)
+      if (len <= 0) {
+        return next(new Error('unexpected length value'))
+      }
       if (xlen + len == buf.length) {
+        pending.length = 0
         next(null, { channel, data: buf.slice(xlen) })
-      } else if (xlen + len > buf.length) {
-        next(null, { channel, data: buf.slice(xlen,xlen+len) })
       } else if (xlen + len < buf.length) {
+        pending.length = 0
+        this.push({ channel, data: buf.slice(xlen,xlen+len) })
+        transform.call(this, buf.slice(xlen+len), enc, next)
+      } else if (xlen + len > buf.length) {
         pending.data = buf.slice(xlen)
         pending.length = len
         pending.channel = channel

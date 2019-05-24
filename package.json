@@ -15,10 +15,12 @@
     "varint": "^5.0.0"
   },
   "scripts": {
-    "test": "tape test/*.js"
+    "test": "tape test/*.js",
+    "coverage": "covert test/*.js"
   },
   "devDependencies": {
     "collect-stream": "^1.2.1",
+    "covert": "^1.1.1",
     "tape": "^4.10.1"
   }
 }
