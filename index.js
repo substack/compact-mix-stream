@@ -88,8 +88,7 @@ exports.unpack = function (n) {
       var len = x >> rsh
       var channel = x & ((1<<rsh)-1)
       if (len <= 0) {
-        return next(new Error('unexpected length value: ' + len
-          + ' xlen=' + xlen))
+        return next(new Error('unexpected length value: ' + len))
       }
       if (xlen + len == buf.length) {
         pending.length = 0
