@@ -1,6 +1,5 @@
 var test = require('tape')
 var mix = require('../')
-var to = require('to2')
 var { Readable } = require('readable-stream')
 var collect = require('collect-stream')
 

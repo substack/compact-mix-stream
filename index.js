@@ -20,30 +20,22 @@ exports.pack = function (streams) {
       }
     })
   })
-  var bqueue = []
-  var iqueue = []
-  var qnext = null, qsize = null
+  var qsize = null
   var output = new Readable({ read })
   var resume = 0
   return output
 
   function read (size) {
-    if (bqueue.length > 0) {
-      return write(bqueue.shift(), iqueue.shift())
-    }
     var sent = 0
     for (var j = 0; j < streams.length; j++) {
       var i = (j + resume) % streams.length
       if (closed[i]) continue
       var buf = streams[i].read()
-      if (buf !== null && sent === 0) {
-        sent++
-        write(buf, i)
-        break
+      if (buf !== null && buf.length === 0) {
+        continue
       } else if (buf !== null) {
         sent++
-        bqueue.push(buf)
-        iqueue.push(i)
+        write(buf, i)
         break
       }
     }
@@ -96,7 +88,8 @@ exports.unpack = function (n) {
       var len = x >> rsh
       var channel = x & ((1<<rsh)-1)
       if (len <= 0) {
-        return next(new Error('unexpected length value'))
+        return next(new Error('unexpected length value: ' + len
+          + ' xlen=' + xlen))
       }
       if (xlen + len == buf.length) {
         pending.length = 0
