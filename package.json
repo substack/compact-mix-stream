@@ -22,5 +22,6 @@
     "collect-stream": "^1.2.1",
     "covert": "^1.1.1",
     "tape": "^4.10.1"
-  }
+  },
+  "license": "BSD"
 }
